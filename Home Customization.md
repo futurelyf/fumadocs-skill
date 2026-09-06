@@ -410,10 +410,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: {
-    default: 'Future Studio',
-    template: '%s | Future Studio',
-  },
+  title: 'Future Studio',
 };
 
 export default function Layout({ children }: LayoutProps<'/'>) {
@@ -429,8 +426,10 @@ export default function Layout({ children }: LayoutProps<'/'>) {
 
 **What it does:**
 - Sets the homepage browser tab title to "Future Studio"
-- Uses a template for other pages: "Page Name | Future Studio"
+- Leaves other pages' titles untouched — docs pages set their own title via `generateMetadata`, so they display just the page name with no suffix appended
 - Follows Next.js App Router metadata convention
+
+**Why a plain string instead of `title.template`?** A `template` such as `'%s | Future Studio'` appends the site name to every other page's tab title. Use a plain string when you want only the home page branded.
 
 ## Summary of Changes
 
@@ -441,7 +440,7 @@ export default function Layout({ children }: LayoutProps<'/'>) {
 | Hero Tagline | "the React.js docs framework you love." | "The docs template you love!" |
 | Primary Button | "Getting Started" | "Get Started" |
 | Secondary Button | "Open GitHub" → `github.com/fuma-nama/fumadocs` | "Contact" → `futurestudio.dev` |
-| Page Title | (none) | "Future Studio" (with template for other pages) |
+| Page Title | (none) | "Future Studio" on the home page only (no suffix on other pages) |
 
 ## Files Modified
 
