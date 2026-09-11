@@ -230,17 +230,20 @@ Modify `<dir>/src/lib/source.ts` to use both plugins:
 ```ts
 import { loader } from 'fumadocs-core/source';
 import { lucideIconsPlugin } from 'fumadocs-core/source/lucide-icons';
-import { docsContentRoute, docsImageRoute, docsRoute } from './shared';
-import { defineDocs } from 'fumadocs-mdx/macro';
+import { blogRoute, docsContentRoute, docsImageRoute, docsRoute } from './shared';
+import { defineCollections, defineDocs } from 'fumadocs-mdx/macro';
 import { metaSchema, pageSchema } from 'fumadocs-core/source/schema';
+import { z } from 'zod';
 
-// ... docs definition ...
+// ... docs and blog definitions ...
 
 export const source = loader({
   baseUrl: docsRoute,
   source: docs.toFumadocsSource(),
   plugins: [lucideIconsPlugin()],
 });
+
+// ... blogLoader export (unchanged) ...
 ```
 
 **After:**
@@ -248,17 +251,20 @@ export const source = loader({
 import { loader } from 'fumadocs-core/source';
 import { lucideIconsPluginWrapper } from './lucide-plugin-wrapper';
 import { iconifyPlugin } from './iconify-plugin';
-import { docsContentRoute, docsImageRoute, docsRoute } from './shared';
-import { defineDocs } from 'fumadocs-mdx/macro';
+import { blogRoute, docsContentRoute, docsImageRoute, docsRoute } from './shared';
+import { defineCollections, defineDocs } from 'fumadocs-mdx/macro';
 import { metaSchema, pageSchema } from 'fumadocs-core/source/schema';
+import { z } from 'zod';
 
-// ... docs definition ...
+// ... docs and blog definitions ...
 
 export const source = loader({
   baseUrl: docsRoute,
   source: docs.toFumadocsSource(),
   plugins: [lucideIconsPluginWrapper(), iconifyPlugin()],
 });
+
+// ... blogLoader export (unchanged) ...
 ```
 
 ### Step 6: Update Root Layout
@@ -271,10 +277,9 @@ import { RootProvider } from 'fumadocs-ui/provider/next';
 import './global.css';
 import { Inter } from 'next/font/google';
 import { Body } from './layout.client';
+import type { Metadata } from 'next';
 
-const inter = Inter({
-  subsets: ['latin'],
-});
+// ... inter font and metadata definitions ...
 
 export default function Layout({ children }: LayoutProps<'/'>) {
   return (
@@ -293,11 +298,10 @@ import { RootProvider } from 'fumadocs-ui/provider/next';
 import './global.css';
 import { Inter } from 'next/font/google';
 import { Body } from './layout.client';
+import type { Metadata } from 'next';
 import { IconRegistry } from '@/lib/icon-registry';
 
-const inter = Inter({
-  subsets: ['latin'],
-});
+// ... inter font and metadata definitions ...
 
 export default function Layout({ children }: LayoutProps<'/'>) {
   return (
