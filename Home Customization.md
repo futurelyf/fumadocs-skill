@@ -125,7 +125,7 @@ export function Hero() {
         alt="hero-image"
         className={cn(
           'absolute top-[460px] left-[20%] max-w-[1200px] rounded-xl border-2 lg:top-[400px]',
-          imageReady ? 'animate-in fade-in duration-400' : 'invisible',
+          imageReady ? 'animate-fd-fade-in duration-400' : 'invisible',
         )}
         onLoad={() => setImageReady(true)}
         priority
