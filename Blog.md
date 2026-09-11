@@ -495,6 +495,93 @@ export default function Layout({ children }: LayoutProps<'/'>) {
 
 ---
 
+### Step 11 (Optional): Add a Blog Icon Button to the Docs Sidebar
+
+**Note**: This is an optional step. If you are an AI, you must ask the user whether this should be executed, meaning AI should ask and obtain clear permission to execute this step.
+
+After Step 10 the docs pages have no route to the blog — the sidebar's bottom-left corner holds only the GitHub button. This step adds a second icon button beside it, to GitHub's right.
+
+`DocsLayout` splits `links` by type: entries with `type: 'icon'` go to the sidebar's **footer row** next to GitHub, while every other type is rendered in the sidebar **body** above the page tree. So the blog link must be `type: 'icon'` — a plain text link would reintroduce the sidebar clutter Step 10 removed.
+
+Ordering is the subtle part. `resolveLinkItems` **appends** the `githubUrl` shortcut after everything in `links`, so any icon declared in `links` lands to GitHub's *left*. To put the blog icon on the right, drop `githubUrl` from `baseOptions()` and declare GitHub as an explicit `type: 'icon'` entry first. lucide-react ships no brand icons, so the GitHub mark is inlined as an SVG.
+
+**`<dir>/src/lib/layout.shared.tsx`:**
+```typescript
+import type { BaseLayoutProps } from 'fumadocs-ui/layouts/shared';
+import { Signature } from 'lucide-react';
+import { appName, blogRoute, docsRoute, gitConfig } from './shared';
+import { FumadocsIcon } from '@/app/layout.client';
+
+const githubUrl = `https://github.com/${gitConfig.user}`;
+
+// `githubUrl` is appended after `links`, so GitHub is declared explicitly to control icon order.
+const GithubIcon = (
+  <svg role="img" viewBox="0 0 24 24">
+    <path
+      fill="currentColor"
+      fillRule="evenodd"
+      clipRule="evenodd"
+      d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385c.6.105.825-.255.825-.57c0-.285-.015-1.23-.015-2.235c-3.015.555-3.795-.735-4.035-1.41c-.135-.345-.72-1.41-1.23-1.695c-.42-.225-1.02-.78-.015-.795c.945-.015 1.62.87 1.845 1.23c1.08 1.815 2.805 1.305 3.495.99c.105-.78.42-1.305.765-1.605c-2.67-.3-5.46-1.335-5.46-5.925c0-1.305.465-2.385 1.23-3.225c-.12-.3-.54-1.53.12-3.18c0 0 1.005-.315 3.3 1.23c.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23c.66 1.65.24 2.88.12 3.18c.765.84 1.23 1.905 1.23 3.225c0 4.605-2.805 5.625-5.475 5.925c.435.375.81 1.095.81 2.22c0 1.605-.015 2.895-.015 3.3c0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12"
+    />
+  </svg>
+);
+
+export function baseOptions(): BaseLayoutProps {
+  return {
+    nav: {
+      title: (
+        <>
+          <FumadocsIcon className="size-5" />
+          {appName}
+        </>
+      ),
+    },
+    links: [
+      {
+        type: 'icon',
+        url: githubUrl,
+        text: 'Github',
+        label: 'GitHub',
+        icon: GithubIcon,
+        external: true,
+      },
+      {
+        type: 'icon',
+        url: blogRoute,
+        text: 'Blog',
+        label: 'Blog',
+        icon: <Signature />,
+      },
+    ],
+  };
+}
+
+export function homeOptions(): BaseLayoutProps {
+  return {
+    ...baseOptions(),
+    links: [
+      {
+        text: 'Docs',
+        url: docsRoute,
+      },
+      {
+        text: 'Blog',
+        url: blogRoute,
+      },
+    ],
+    githubUrl,
+  };
+}
+```
+
+`homeOptions()` **overrides** `links` rather than extending it, so the home and blog navbars keep the plain Docs and Blog text links from Step 10 and get GitHub back through `githubUrl`. Only the docs sidebar sees the two icon entries.
+
+No size class is needed on `<Signature />`: the sidebar renders icon items with `buttonVariants({ size: 'icon-sm' })`, which is `p-1.5 [&_svg]:size-4.5`.
+
+To use a different lucide icon, swap the import and the JSX — the rest of the entry is unchanged.
+
+---
+
 ## How The System Works
 
 ### Two Independent Collections
@@ -522,6 +609,7 @@ Each collection has its own schema and its own loader. Nothing is shared but the
 - **Share Post**: copies the absolute post URL and swaps to "Copied URL" briefly
 - **Blog color**: navbar icon, card dates, and the Share button all render in the blog color (brown in light mode, tan in dark) on every `/blog` route, while docs routes keep their own section colors
 - **Navbar**: Docs and Blog links, in that order, on the home and blog pages — the docs pages navigate by section tabs instead, and their sidebar shows no `links` entries
+- **Docs sidebar** (Step 11 only): a GitHub button and, to its right, a `Signature` button linking to `/blog`
 
 ## Files Created
 
@@ -536,7 +624,7 @@ Each collection has its own schema and its own loader. Nothing is shared but the
 
 1. `<dir>/src/lib/shared.ts` — added `blogRoute`
 2. `<dir>/src/lib/source.ts` — blog collection and `blogLoader`
-3. `<dir>/src/lib/layout.shared.tsx` — `homeOptions()` added with the Docs and Blog navbar links
+3. `<dir>/src/lib/layout.shared.tsx` — `homeOptions()` added with the Docs and Blog navbar links; Step 11 adds the sidebar icon entries
 4. `<dir>/src/app/(home)/layout.tsx` — switched to `homeOptions()`
 5. `<dir>/src/app/global.css` — `--banner-text-color-up` / `--banner-text-color-down`, plus the `--blog-color` variables and `.blog` rule
 6. `<dir>/src/app/layout.client.tsx` — section detection fixed for single dynamic segments, and the `blog` class applied on `/blog` routes
