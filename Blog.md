@@ -115,6 +115,8 @@ author: Future Studio
 date: 2026-09-11
 ---
 
+## Where Posts Live
+
 Posts live in `content/blog` as MDX files. The file name becomes the URL slug,
 so `introducing-the-blog.mdx` is served at `/blog/introducing-the-blog`.
 ```
@@ -127,6 +129,8 @@ description: A shorter example, mostly here to show how the index sorts posts.
 author: Future Studio
 date: 2026-08-20
 ---
+
+## How Sorting Works
 
 This post has an earlier `date`, so it appears second on the index.
 ```
