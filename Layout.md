@@ -277,6 +277,42 @@ Add the Spacious CSS import after the `@import 'tailwindcss';` line:
 /* @import 'fumadocs-ui/css/generated/spacious.css'; */
 ```
 
+### Step 9: Fix Search Bar Order in Spacious Layout
+
+By default, the spacious layout places the section switching bar above the search bar in the sidebar. To match the docs layout order (search bar first, then section switching bar), make the following adjustment:
+
+**`<dir>/src/layouts/spacious/slots/sidebar.tsx`:**
+
+Find the section around line 84 that looks like this:
+
+```typescript
+        <div className="flex flex-col gap-2 px-3 empty:hidden">
+          <TabsMenu />
+          {slots.searchTrigger && (
+            <slots.searchTrigger.full
+              hideIfDisabled
+              className="h-10 gap-3 rounded-xl ps-[calc(--spacing(2.5)-1px)] pe-2 [&_svg]:shrink-0"
+            />
+          )}
+        </div>
+```
+
+Replace it with (swap the order of `searchTrigger` and `TabsMenu`):
+
+```typescript
+        <div className="flex flex-col gap-2 px-3 empty:hidden">
+          {slots.searchTrigger && (
+            <slots.searchTrigger.full
+              hideIfDisabled
+              className="h-10 gap-3 rounded-xl ps-[calc(--spacing(2.5)-1px)] pe-2 [&_svg]:shrink-0"
+            />
+          )}
+          <TabsMenu />
+        </div>
+```
+
+This ensures the search bar appears above the section switching bar, matching the visual order of the docs layout.
+
 ## How The System Works
 
 ### Layout Switching Flow
