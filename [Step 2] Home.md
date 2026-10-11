@@ -222,15 +222,34 @@ export default function HomePage() {
 
 ### 3. Copy Screenshot Image
 
-Copy the hero preview image from the skill/Image directory into your app (`<dir>`):
+Copy the hero preview image from the skill/Image directory into your app (`<dir>`).
 
-```bash
-cp "skill/Image/hero-preview.jpeg" "<dir>/src/app/(home)/hero-preview.jpeg"
+**IMPORTANT - For AI agents:** The `skill/` folder is located at the **REPOSITORY ROOT**, parallel to `<dir>`, NOT inside it. Check your current working directory first with `pwd`:
+
+**Directory structure:**
+```
+fumadocs/                    ← Repository root
+├── skill/                   ← Skill files are HERE
+│   └── Image/
+│       └── hero-preview.jpeg
+└── template/                ← <dir> might be here
+    └── src/app/(home)/
 ```
 
-**Important:** The `skill/` folder is NOT inside `<dir>`. It is a separate location outside your app directory. When copying the image:
-- If you're working from outside `<dir>`, use the command as written above
-- If your current working directory is already inside `<dir>` (e.g., you ran `cd template`), adjust the source path accordingly: `cp "../skill/Image/hero-preview.jpeg" "src/app/(home)/hero-preview.jpeg"`
+**Command based on your current location:**
+
+```bash
+# Step 1: Check where you are
+pwd
+
+# Step 2a: If at repository root (path ends with 'fumadocs'):
+cp "skill/Image/hero-preview.jpeg" "<dir>/src/app/(home)/hero-preview.jpeg"
+
+# Step 2b: If already inside <dir> (path ends with 'fumadocs/template' or similar):
+cp "../skill/Image/hero-preview.jpeg" "src/app/(home)/hero-preview.jpeg"
+```
+
+**Rule:** If you're inside `<dir>`, use `../skill/` to go up one level to access the skill folder.
 
 If you do not have the image in skill/Image, substitute any image with a similar aspect ratio instead.
 

@@ -152,13 +152,32 @@ Sort order comes from `date`, not the file name, so files need no numeric prefix
 
 The index page uses a full-width banner behind its heading.
 
-```bash
-cp "skill/Image/banner.png" "<dir>/src/app/(home)/blog/banner.png"
+**IMPORTANT - For AI agents:** The `skill/` folder is located at the **REPOSITORY ROOT**, parallel to `<dir>`, NOT inside it. Check your current working directory first with `pwd`:
+
+**Directory structure:**
+```
+fumadocs/                    ← Repository root
+├── skill/                   ← Skill files are HERE
+│   └── Image/
+│       └── banner.png
+└── template/                ← <dir> might be here
+    └── src/app/(home)/blog/
 ```
 
-**Important:** The `skill/` folder is NOT inside `<dir>`. It is a separate location outside your app directory. When copying the image:
-- If you're working from outside `<dir>`, use the command as written above
-- If your current working directory is already inside `<dir>` (e.g., you ran `cd template`), adjust the source path accordingly: `cp "../skill/Image/banner.png" "src/app/(home)/blog/banner.png"`
+**Command based on your current location:**
+
+```bash
+# Step 1: Check where you are
+pwd
+
+# Step 2a: If at repository root (path ends with 'fumadocs'):
+cp "skill/Image/banner.png" "<dir>/src/app/(home)/blog/banner.png"
+
+# Step 2b: If already inside <dir> (path ends with 'fumadocs/template' or similar):
+cp "../skill/Image/banner.png" "src/app/(home)/blog/banner.png"
+```
+
+**Rule:** If you're inside `<dir>`, use `../skill/` to go up one level to access the skill folder.
 
 If you do not have the image in skill/Image, substitute any wide image — the container is `aspect-[3.2]`, so roughly 3.2:1 works best.
 
