@@ -497,7 +497,9 @@ export default function Layout({ children }: LayoutProps<'/'>) {
 
 ### Step 11 (Optional): Add a Blog Icon Button to the Docs Sidebar
 
-**Note**: This is an optional step. If you are an AI, you must ask the user whether this should be executed, meaning AI should ask and obtain clear permission to execute this step.
+**Note 1**: This is an optional step. If you are an AI, you must ask the user whether this should be executed, meaning AI should ask and obtain clear permission to execute this step.
+
+**Note 2**: Do NOT install `@iconify/react` in this step because I will install it using another skill. For now, you can just enter the following code related to Iconify and the user will make sure to install it later.
 
 After Step 10 the docs pages have no route to the blog — the sidebar's bottom-left corner holds only the GitHub button. This step adds a second icon button beside it, to GitHub's right.
 
