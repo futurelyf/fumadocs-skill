@@ -220,13 +220,13 @@ export default function HomePage() {
 
 ### 3. Copy Screenshot Image
 
-Copy the hero preview image from a local checkout of the official repo (`<official>`) into your app (`<dir>`):
+Copy the hero preview image from the skill/Image directory into your app (`<dir>`):
 
 ```bash
-cp "<official>/apps/docs/app/(home)/hero-preview.jpeg" "<dir>/src/app/(home)/hero-preview.jpeg"
+cp "skill/Image/hero-preview.jpeg" "<dir>/src/app/(home)/hero-preview.jpeg"
 ```
 
-If you do not have the official repo checked out locally, substitute any image with a similar aspect ratio instead.
+If you do not have the image in skill/Image, substitute any image with a similar aspect ratio instead.
 
 ## Implementation Details
 
