@@ -41,7 +41,7 @@ Run the Fumadocs CLI customize command to create local copies of layout componen
 
 ```bash
 cd "<dir>"
-npx @fumadocs/cli@latest customize
+pnpm dlx @fumadocs/cli@latest customize
 ```
 
 When prompted, select:
