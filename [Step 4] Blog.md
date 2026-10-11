@@ -9,6 +9,8 @@ Throughout this guide, `<dir>` stands for the top-level directory of the Fumadoc
 
 Resolve `<dir>` once at the start, then apply it consistently to every path below.
 
+**IMPORTANT for AI agents:** When you run commands with `cd "<dir>"` or when your current working directory IS already inside `<dir>`, then all subsequent file operations should use paths RELATIVE to that directory (e.g., `src/lib/source.ts`), NOT with the `<dir>` prefix (e.g., NOT `template/src/lib/source.ts` when you're already in template/). Check your current working directory with `pwd` before deciding whether to include the directory prefix.
+
 **Note:** `<dir>` applies to filesystem paths only. Import specifiers beginning with `@/` (such as `@/lib/source`) are TypeScript path aliases resolved relative to the app's own `src/` directory — leave them exactly as written, with no `<dir>` prefix.
 
 Separately, `<official>` stands for a local checkout of the official Fumadocs monorepo, used only as a source to copy reference assets from. It is a different location than `<dir>`.
@@ -153,6 +155,10 @@ The index page uses a full-width banner behind its heading.
 ```bash
 cp "skill/Image/banner.png" "<dir>/src/app/(home)/blog/banner.png"
 ```
+
+**Important:** The `skill/` folder is NOT inside `<dir>`. It is a separate location outside your app directory. When copying the image:
+- If you're working from outside `<dir>`, use the command as written above
+- If your current working directory is already inside `<dir>` (e.g., you ran `cd template`), adjust the source path accordingly: `cp "../skill/Image/banner.png" "src/app/(home)/blog/banner.png"`
 
 If you do not have the image in skill/Image, substitute any wide image — the container is `aspect-[3.2]`, so roughly 3.2:1 works best.
 
