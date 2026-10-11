@@ -151,10 +151,10 @@ Sort order comes from `date`, not the file name, so files need no numeric prefix
 The index page uses a full-width banner behind its heading.
 
 ```bash
-cp "<official>/apps/docs/app/(home)/blog/banner.png" "<dir>/src/app/(home)/blog/banner.png"
+cp "skill/Image/banner.png" "<dir>/src/app/(home)/blog/banner.png"
 ```
 
-If you do not have the official repo checked out locally, substitute any wide image — the container is `aspect-[3.2]`, so roughly 3.2:1 works best.
+If you do not have the image in skill/Image, substitute any wide image — the container is `aspect-[3.2]`, so roughly 3.2:1 works best.
 
 ### Step 5: Add Banner Text and Blog Colors
 
