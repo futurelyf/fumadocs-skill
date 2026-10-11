@@ -11,9 +11,9 @@ Resolve `<dir>` once at the start, then apply it consistently to every path belo
 
 **Note:** `<dir>` applies to filesystem paths only. Import specifiers beginning with `@/` (such as `@/lib/layout-config`) are TypeScript path aliases resolved relative to the app's own `src/` directory — leave them exactly as written, with no `<dir>` prefix.
 
-# Task: Spacious Layout with Easy Layout Switching
+# Task: Multiple Layout Support with Easy Switching
 
-This task enables the Spacious layout in Fumadocs and creates a centralized configuration system that allows you to easily switch between the default Docs layout and the Spacious layout by changing a single constant.
+This task enables multiple layout presets in Fumadocs (Docs, Spacious, Glass, Notebook) and creates a centralized configuration system that allows you to easily switch between layouts by changing a single constant.
 
 **Objective**: 
 1. Customize the Fumadocs layout components locally
@@ -44,10 +44,10 @@ cd "<dir>"
 pnpm dlx @fumadocs/cli@latest customize
 ```
 
-When prompted, select:
-- **Layout preset**: Spacious
+When prompted, select all layout presets you want to support:
+- **Layout presets**: Docs, Spacious, Glass, Notebook (select all)
 
-This command creates a `<dir>/src/layouts/` directory with customizable layout components that you can modify independently of the fumadocs-ui package.
+This command creates a `<dir>/src/layouts/` directory with customizable layout components for each preset that you can modify independently of the fumadocs-ui package.
 
 ### Step 2: Create Layout Configuration File
 
@@ -60,12 +60,14 @@ Create a centralized configuration file for managing which layout is active.
  * Change ACTIVE_LAYOUT to switch between different layout styles
  */
 
-export type LayoutType = 'docs' | 'spacious';
+export type LayoutType = 'docs' | 'spacious' | 'glass' | 'notebook';
 
 /**
  * CHANGE THIS VALUE TO SWITCH LAYOUTS
  * - 'docs': Default Docs Layout (compact, traditional)
  * - 'spacious': Spacious Layout (panel-based, less compact)
+ * - 'glass': Glass Layout (glassmorphism design)
+ * - 'notebook': Notebook Layout (notebook-style design)
  */
 export const ACTIVE_LAYOUT: LayoutType = 'spacious';
 
@@ -80,12 +82,22 @@ export const LAYOUT_CONFIG = {
     description: 'Panel-based layout with page in inset beside sidebar',
     requiresCustomCSS: true,
   },
+  glass: {
+    name: 'Glass Layout',
+    description: 'Modern glassmorphism design',
+    requiresCustomCSS: true,
+  },
+  notebook: {
+    name: 'Notebook Layout',
+    description: 'Notebook-style documentation layout',
+    requiresCustomCSS: true,
+  },
 } as const;
 ```
 
 ### Step 3: Extract Shared Transform Logic
 
-Create a shared utility for the tab transform logic so it can be used by both layout types.
+Create a shared utility for the tab transform logic so it can be used by all layout types, with special handling for the Glass layout's icon sizing.
 
 **`<dir>/src/lib/layout-utils.tsx`:**
 ```typescript
@@ -93,18 +105,39 @@ import { source } from '@/lib/source';
 import { getSection } from '@/lib/navigation';
 import type { CSSProperties } from 'react';
 import type * as PageTree from 'fumadocs-core/page-tree';
+import type { LayoutType } from './layout-config';
 
 /**
- * Shared tab transform logic used by both Docs and Spacious layouts
+ * Shared tab transform logic used by all layouts
  * Applies section-based coloring to tab icons
  */
-export function createTabTransform() {
+export function createTabTransform(layoutType?: LayoutType) {
   return (option: any, node: PageTree.Node) => {
     const meta = source.getNodeMeta(node);
     if (!meta || !node.icon) return option;
 
     const color = `var(--${getSection(meta.path)}-color, var(--color-fd-foreground))`;
 
+    // Glass layout needs constrained icon size
+    if (layoutType === 'glass') {
+      return {
+        ...option,
+        icon: (
+          <div
+            className="[&_svg]:size-4 rounded-lg text-(--tab-color) max-md:bg-(--tab-color)/10 max-md:border max-md:p-1.5"
+            style={
+              {
+                '--tab-color': color,
+              } as CSSProperties
+            }
+          >
+            {node.icon}
+          </div>
+        ),
+      };
+    }
+
+    // Default for docs, spacious, notebook
     return {
       ...option,
       icon: (
@@ -134,6 +167,8 @@ Create a client component wrapper that dynamically selects the correct layout ba
 
 import { DocsLayout as DocsLayoutDefault } from 'fumadocs-ui/layouts/docs';
 import { DocsLayout as DocsLayoutSpacious } from '@/layouts/spacious';
+import { DocsLayout as DocsLayoutGlass } from '@/layouts/glass';
+import { DocsLayout as DocsLayoutNotebook } from '@/layouts/notebook';
 import { createTabTransform } from '@/lib/layout-utils';
 import type { ReactNode } from 'react';
 import type { BaseLayoutProps } from 'fumadocs-ui/layouts/shared';
@@ -147,17 +182,33 @@ interface DocsLayoutWrapperProps extends BaseLayoutProps {
 }
 
 /**
- * Unified layout wrapper that switches between Docs and Spacious layouts
+ * Unified layout wrapper that switches between all available layouts
  * based on the layoutType prop
  */
 export function DocsLayoutWrapper({ layoutType, children, ...props }: DocsLayoutWrapperProps) {
-  const Layout = layoutType === 'spacious' ? DocsLayoutSpacious : DocsLayoutDefault;
+  let Layout;
+
+  switch (layoutType) {
+    case 'spacious':
+      Layout = DocsLayoutSpacious;
+      break;
+    case 'glass':
+      Layout = DocsLayoutGlass;
+      break;
+    case 'notebook':
+      Layout = DocsLayoutNotebook;
+      break;
+    case 'docs':
+    default:
+      Layout = DocsLayoutDefault;
+      break;
+  }
 
   return (
     <Layout
       {...props}
       tabs={{
-        transform: createTabTransform(),
+        transform: createTabTransform(layoutType),
       }}
     >
       {children}
@@ -167,7 +218,7 @@ export function DocsLayoutWrapper({ layoutType, children, ...props }: DocsLayout
 ```
 
 **Why this is a client component:**
-- The `DocsLayout` components from both sources are client components
+- The `DocsLayout` components from all sources are client components
 - Functions (like `transform`) can only be passed to client components in Next.js 16
 - This wrapper handles the dynamic layout selection on the client side
 
@@ -201,15 +252,33 @@ import { ACTIVE_LAYOUT } from '@/lib/layout-config';
 
 /**
  * Dynamic page component exports based on active layout
- * Automatically switches between Docs and Spacious page components
+ * Automatically switches between Docs, Spacious, Glass, and Notebook page components
  */
 
 // Layout-specific imports
 import * as DocsPageComponents from 'fumadocs-ui/layouts/docs/page';
 import * as SpaciousPageComponents from '@/layouts/spacious/page';
+import * as GlassPageComponents from '@/layouts/glass/page';
+import * as NotebookPageComponents from '@/layouts/notebook/page';
 
 // Select the correct components based on active layout
-const components = ACTIVE_LAYOUT === 'spacious' ? SpaciousPageComponents : DocsPageComponents;
+let components;
+
+switch (ACTIVE_LAYOUT) {
+  case 'spacious':
+    components = SpaciousPageComponents;
+    break;
+  case 'glass':
+    components = GlassPageComponents;
+    break;
+  case 'notebook':
+    components = NotebookPageComponents;
+    break;
+  case 'docs':
+  default:
+    components = DocsPageComponents;
+    break;
+}
 
 // Re-export all page components
 export const DocsPage = components.DocsPage;
@@ -255,26 +324,30 @@ import {
 
 Leave the rest of the file unchanged.
 
-### Step 8: Add Spacious Layout CSS
+### Step 8: Add Layout CSS Imports
 
-Add the required CSS import for the Spacious layout to your global styles.
+Add the required CSS imports for all custom layouts to your global styles.
 
 **`<dir>/src/app/global.css`:**
 
-Add the Spacious CSS import after the `@import 'tailwindcss';` line:
+Add the layout CSS imports after the `@import 'tailwindcss';` line:
 
 ```css
 @import 'tailwindcss';
 @import 'fumadocs-ui/css/generated/spacious.css';
+@import 'fumadocs-ui/css/generated/glass.css';
+@import 'fumadocs-ui/css/generated/notebook.css';
 @import 'fumadocs-ui/css/neutral.css';
 @import 'fumadocs-ui/css/preset.css';
 
 /* Rest of your CSS remains unchanged */
 ```
 
-**Note**: If you switch back to the default Docs layout, you can comment out this line:
+**Note**: The Docs layout doesn't require a custom CSS import. If you want to optimize bundle size, you can comment out the CSS imports for layouts you're not actively using:
 ```css
 /* @import 'fumadocs-ui/css/generated/spacious.css'; */
+/* @import 'fumadocs-ui/css/generated/glass.css'; */
+/* @import 'fumadocs-ui/css/generated/notebook.css'; */
 ```
 
 ### Step 9: Fix Search Bar Order in Spacious Layout
@@ -320,7 +393,7 @@ This ensures the search bar appears above the section switching bar, matching th
 1. **Single configuration point**: `ACTIVE_LAYOUT` in `<dir>/src/lib/layout-config.ts` controls the entire layout system
 2. **Layout wrapper**: `DocsLayoutWrapper` reads the layout type and selects the appropriate layout component
 3. **Page components**: `page-components.ts` automatically exports the correct components for the active layout
-4. **Transform logic**: Shared tab transform logic works with both layouts
+4. **Transform logic**: Shared tab transform logic works with all layouts, with special handling for Glass layout icon sizing
 
 ### Request Flow
 
@@ -335,9 +408,10 @@ This ensures the search bar appears above the section switching bar, matching th
 
 - **Single toggle point**: Change one constant to switch entire layout system
 - **No code duplication**: Transform logic shared between layouts
+- **Layout-specific optimizations**: Glass layout gets proper icon sizing automatically
 - **Type-safe**: TypeScript ensures props match between layouts
 - **Easy maintenance**: Layout-specific code isolated in one wrapper
-- **Future-proof**: Easy to add more layout types (Glass, etc.)
+- **Future-proof**: Easy to add more layout types
 
 ## Expected Results
 
