@@ -33,11 +33,13 @@ Fumadocs comes with built-in support for Lucide icons using the `lucideIconsPlug
 
 ### Step 1: Install Required Packages
 
+**Note**: If you have already completed Step 11 in [Step 4] Blog.md, `@iconify/react` is already installed. Only install the icon set packages you need.
+
 Install the `@iconify/react` package and icon set packages you need, from inside `<dir>`:
 
 ```bash
 cd "<dir>"
-pnpm install @iconify/react
+pnpm install @iconify/react  # Skip if already installed from [Step 4] Blog.md
 pnpm install -D @iconify-json/fa7-brands  # Font Awesome Brands example
 pnpm install -D @iconify-json/<collection-name>
 ```
