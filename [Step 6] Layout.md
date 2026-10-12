@@ -226,7 +226,12 @@ export function DocsLayoutWrapper({ layoutType, children, ...props }: DocsLayout
 
 Simplify the docs layout to use the unified wrapper with the active layout configuration.
 
+**IMPORTANT**: The `pnpm dlx @fumadocs/cli@latest customize` command automatically updates `<dir>/src/app/docs/layout.tsx` to import from `@/layouts/docs` instead of `fumadocs-ui/layouts/docs`. This is expected behavior.
+
 **`<dir>/src/app/docs/layout.tsx`:**
+
+Replace the entire file content with:
+
 ```typescript
 import { source } from '@/lib/source';
 import { DocsLayoutWrapper } from './layout.client';
@@ -241,6 +246,8 @@ export default function Layout({ children }: LayoutProps<'/docs'>) {
   );
 }
 ```
+
+**Note**: The customize command will have changed the import from `fumadocs-ui/layouts/docs` to `@/layouts/docs`. We're replacing this with our unified wrapper that supports all layout types.
 
 ### Step 6: Create Dynamic Page Components Export
 
@@ -296,6 +303,8 @@ export type { DocsPageProps } from 'fumadocs-ui/layouts/docs/page';
 
 Update the docs page file to use the dynamic page component exports.
 
+**IMPORTANT**: Similar to Step 5, the customize command will have changed the import path in `<dir>/src/app/docs/[[...slug]]/page.tsx` from `fumadocs-ui/layouts/docs/page` to `@/layouts/docs/page`.
+
 **`<dir>/src/app/docs/[[...slug]]/page.tsx`:**
 
 Change the import from:
@@ -307,7 +316,7 @@ import {
   DocsTitle,
   MarkdownCopyButton,
   ViewOptionsPopover,
-} from 'fumadocs-ui/layouts/docs/page';
+} from '@/layouts/docs/page';
 ```
 
 To:
@@ -321,6 +330,8 @@ import {
   ViewOptionsPopover,
 } from '@/lib/page-components';
 ```
+
+**Note**: The original import may have been `fumadocs-ui/layouts/docs/page` before running the customize command, but it will be `@/layouts/docs/page` after. Either way, change it to use `@/lib/page-components`.
 
 Leave the rest of the file unchanged.
 
