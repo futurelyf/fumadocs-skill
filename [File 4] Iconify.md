@@ -33,15 +33,13 @@ Fumadocs comes with built-in support for Lucide icons using the `lucideIconsPlug
 
 ### Step 1: Install Required Packages
 
-**Note**: If you have already completed Step 11 in [Step 4] Blog.md, `@iconify/react` is already installed. Only install the icon set packages you need.
-
 Install the `@iconify/react` package and icon set packages you need, from inside `<dir>`:
 
 ```bash
 cd "<dir>"
-pnpm install @iconify/react  # Skip if already installed from [Step 4] Blog.md
-pnpm install -D @iconify-json/fa7-brands  # Font Awesome Brands example
-pnpm install -D @iconify-json/<collection-name>
+pnpm install @iconify/react
+pnpm install -D @iconify-json/fa7-brands  # Font Awesome Brands (Must be installed)
+# pnpm install -D @iconify-json/<collection-name>  # AI shouldn't run this in Bash, it's for user reference only
 ```
 
 ### Step 2: Create the Icon Registry
@@ -230,14 +228,13 @@ Modify `<dir>/src/lib/source.ts` to use both plugins:
 
 **Before:**
 ```ts
-import { loader } from 'fumadocs-core/source';
+import { llms, loader } from 'fumadocs-core/source';
 import { lucideIconsPlugin } from 'fumadocs-core/source/lucide-icons';
-import { blogRoute, docsContentRoute, docsImageRoute, docsRoute } from './shared';
-import { defineCollections, defineDocs } from 'fumadocs-mdx/macro';
+import { docsContentRoute, docsImageRoute, docsRoute } from './shared';
+import { defineDocs } from 'fumadocs-mdx/macro';
 import { metaSchema, pageSchema } from 'fumadocs-core/source/schema';
-import { z } from 'zod';
 
-// ... docs and blog definitions ...
+// ... docs definition ...
 
 export const source = loader({
   baseUrl: docsRoute,
@@ -245,20 +242,19 @@ export const source = loader({
   plugins: [lucideIconsPlugin()],
 });
 
-// ... blogLoader export (unchanged) ...
+// ... docsLlms export (unchanged) ...
 ```
 
 **After:**
 ```ts
-import { loader } from 'fumadocs-core/source';
+import { llms, loader } from 'fumadocs-core/source';
 import { lucideIconsPluginWrapper } from './lucide-plugin-wrapper';
 import { iconifyPlugin } from './iconify-plugin';
-import { blogRoute, docsContentRoute, docsImageRoute, docsRoute } from './shared';
-import { defineCollections, defineDocs } from 'fumadocs-mdx/macro';
+import { docsContentRoute, docsImageRoute, docsRoute } from './shared';
+import { defineDocs } from 'fumadocs-mdx/macro';
 import { metaSchema, pageSchema } from 'fumadocs-core/source/schema';
-import { z } from 'zod';
 
-// ... docs and blog definitions ...
+// ... docs definition ...
 
 export const source = loader({
   baseUrl: docsRoute,
@@ -266,7 +262,7 @@ export const source = loader({
   plugins: [lucideIconsPluginWrapper(), iconifyPlugin()],
 });
 
-// ... blogLoader export (unchanged) ...
+// ... docsLlms export (unchanged) ...
 ```
 
 ### Step 6: Update Root Layout
