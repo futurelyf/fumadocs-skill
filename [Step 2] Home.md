@@ -17,7 +17,48 @@ Separately, `<official>` stands for a local checkout of the official Fumadocs mo
 
 # Task 4: Hero Section with Animated Shaders
 
-This task transplants the official Fumadocs homepage hero section design to your app, including animated gradient backgrounds and the screenshot preview.
+This task implements the official Fumadocs homepage hero section design with animated gradient backgrounds and screenshot preview.
+
+## Prerequisites
+
+**IMPORTANT for AI agents:** The customize command below is interactive and requires user input. You MUST prompt the user to run this command in their terminal manually. Do NOT attempt to run it yourself via Bash tool.
+
+Run the Fumadocs CLI customize command to eject the HomeLayout components:
+
+```bash
+cd "<dir>" && pnpm dlx @fumadocs/cli@latest customize
+```
+
+**What this command does:**
+- Ejects the HomeLayout component into `<dir>/src/layouts/home/` directory
+- Creates UI components in `<dir>/src/components/ui/` (button, collapsible)
+- Adds dependencies: `@base-ui/react`, `@fuma-translate/react`, `@fumadocs/base-ui`, `class-variance-authority`
+- Creates `<dir>/cli.json` with path aliases
+- Creates `<dir>/src/app/(home)/layout.tsx` with import from `@/layouts/home` (local ejected version)
+- Creates `<dir>/src/app/(home)/page.tsx` as a placeholder home page
+
+**Verify the Layout File**
+
+After running the customize command, verify that `<dir>/src/app/(home)/layout.tsx` was created correctly. The file should look **exactly** like this:
+
+```tsx title="<dir>/src/app/(home)/layout.tsx"
+import { HomeLayout } from '@/layouts/home';
+import { baseOptions } from '@/lib/layout.shared';
+import type { ReactNode } from 'react';
+
+export default function Layout({ children }: { children: ReactNode }) {
+  return <HomeLayout {...baseOptions()}>{children}</HomeLayout>;
+}
+```
+
+**Key points to verify:**
+1. Imports `HomeLayout` from `@/layouts/home` (ejected local version, NOT `fumadocs-ui/layouts/home`)
+2. Imports `baseOptions` from `@/lib/layout.shared`
+3. Imports `ReactNode` type from React
+4. Component accepts `children` with proper TypeScript typing: `{ children: ReactNode }`
+5. Passes `baseOptions()` to `HomeLayout` component
+
+This file structure is what connects your app to the ejected components in `src/layouts/home/`, allowing you to customize the navbar, container, and overall home layout structure freely.
 
 ## Required Dependencies
 
