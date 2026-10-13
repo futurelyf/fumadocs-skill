@@ -15,7 +15,7 @@ Resolve `<dir>` once at the start, then apply it consistently to every path belo
 
 Separately, `<official>` stands for a local checkout of the official Fumadocs monorepo, used only as a source to copy reference assets from. It is a different location than `<dir>`.
 
-# Task 4: Hero Section with Animated Shaders
+# Task 1: Hero Section with Animated Shaders
 
 This task implements the official Fumadocs homepage hero section design with animated gradient backgrounds and screenshot preview.
 
@@ -349,7 +349,7 @@ After implementation:
 
 ---
 
-# Task 5: Customization Updates
+# Task 2: Customization Updates
 
 This task customizes the branding and links in your app to match your personal/company identity.
 
