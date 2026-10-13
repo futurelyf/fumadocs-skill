@@ -26,14 +26,6 @@ minimumReleaseAge: 0
 
 Add the key if missing; change it to `0` if set to a non-zero value.
 
-### 3. Update to the latest versions
-
-```bash
-pnpm update --latest
-```
-
-`--latest` ignores the ranges in `package.json` and moves to the newest published version, including major bumps. Plain `pnpm update` only moves within the existing semver range.
-
 ## Notes
 
 - Repeat for each project folder — updating `template/` does not touch `official/`.
