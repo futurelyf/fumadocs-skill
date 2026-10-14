@@ -604,37 +604,66 @@ Add the `@theme` block with `--spacing-page` to set proper blog page width, and 
 
 **`<dir>/src/app/layout.client.tsx`:**
 
-Update the `Body` component to detect blog routes and apply the `.blog` class:
+Update the `Body` component to detect blog routes and apply the `.blog` class.
 
+Before:
 ```typescript
 'use client';
 
-import { usePathname } from 'next/navigation';
-import { RootProvider } from 'fumadocs-ui/provider';
-import { FC, ReactNode } from 'react';
-import { docsRoute } from '@/lib/shared';
+import { useParams } from 'next/navigation';
+import { type ReactNode, useId } from 'react';
+import { getSection } from '@/lib/navigation';
+import { IconRegistry } from '@/lib/icon-registry';
 
-export const Body: FC<{ children: ReactNode }> = ({ children }) => {
+export function Body({ children }: { children: ReactNode }) {
+  const { slug = [] } = useParams();
+  const section = Array.isArray(slug) ? getSection(slug[0]) : undefined;
+
+  return (
+    <body className={`flex flex-col min-h-screen ${section || ''}`}>
+      <IconRegistry />
+      {children}
+    </body>
+  );
+}
+
+// ... rest of file (FumadocsIcon component, etc.)
+```
+
+After:
+```typescript
+'use client';
+
+import { useParams, usePathname } from 'next/navigation';
+import { type ReactNode, useId } from 'react';
+import { getSection } from '@/lib/navigation';
+import { IconRegistry } from '@/lib/icon-registry';
+
+export function Body({ children }: { children: ReactNode }) {
+  const { slug = [] } = useParams();
   const pathname = usePathname();
-  let section = '';
-  
-  if (pathname.startsWith(docsRoute)) {
-    const urlAfterDocs = pathname.slice(docsRoute.length);
-    if (urlAfterDocs.startsWith('/sec-1')) section = 'sec-1';
-    else if (urlAfterDocs.startsWith('/sec-2')) section = 'sec-2';
-  } else if (pathname.startsWith('/blog')) {
+  let section = Array.isArray(slug) ? getSection(slug[0]) : undefined;
+
+  if (pathname.startsWith('/blog')) {
     section = 'blog';
   }
 
   return (
-    <body className={section}>
-      <RootProvider>{children}</RootProvider>
+    <body className={`flex flex-col min-h-screen ${section || ''}`}>
+      <IconRegistry />
+      {children}
     </body>
   );
-};
+}
+
+// ... rest of file (FumadocsIcon component, etc.)
 ```
 
-**Key change:** Added the `else if (pathname.startsWith('/blog'))` condition to detect blog routes and apply the `'blog'` section class.
+**Key changes:**
+1. Add `usePathname` to imports from `'next/navigation'`
+2. Add `const pathname = usePathname();` to get current route
+3. Change `const section` to `let section` (to allow reassignment)
+4. Add blog detection: `if (pathname.startsWith('/blog')) { section = 'blog'; }`
 
 #### Update Banner Text Colors
 
