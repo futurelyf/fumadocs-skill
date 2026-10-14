@@ -779,12 +779,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
 This step adds icon buttons in the docs sidebar footer for easy navigation to GitHub and the blog.
 
-**Prerequisites:** Install `@iconify/react` dependency:
-
-```bash
-cd "<dir>" && pnpm add @iconify/react
-```
-
 #### Update Layout Shared Configuration
 
 **`<dir>/src/lib/layout.shared.tsx`:**
