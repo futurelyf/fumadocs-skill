@@ -52,7 +52,7 @@ This component preloads icon collections for offline use, ensuring icons work wi
 'use client';
 
 import { addCollection } from '@iconify/react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 /**
  * Preload icon collections for offline use.
@@ -73,22 +73,22 @@ const collections = [
   // Add more icon sets here
 ];
 
-// Register all collections
-collections.forEach((collection) => {
-  addCollection(collection as any);
-});
-
 /**
  * IconRegistry component - must be rendered in your root layout
  * to ensure icons are registered on the client
  */
 export function IconRegistry() {
+  const [mounted, setMounted] = useState(false);
+
   useEffect(() => {
-    // Re-register on client mount to ensure they're available
+    setMounted(true);
+    // Register on client mount to ensure they're available
     collections.forEach((collection) => {
       addCollection(collection as any);
     });
   }, []);
+
+  if (!mounted) return null;
 
   return null;
 }
