@@ -240,10 +240,10 @@ export default function Page() {
           className="absolute inset-0 size-full -z-1 object-cover"
         />
         <h1 className="mb-4 text-3xl text-landing-foreground font-mono font-medium">
-          Fumadocs Blog
+          Future Studio Blog
         </h1>
         <p className="text-sm font-mono text-landing-foreground-200">
-          Latest announcements of Fumadocs.
+          Latest announcements of Future Studio
         </p>
         <Link
           href="/blog/tags"
@@ -267,15 +267,38 @@ export default function Page() {
 
 ### Step 6: Add Banner Image
 
-Copy a banner image from an existing Fumadocs project or create one. The banner should be approximately 3.2:1 aspect ratio (e.g., 1600x500px).
+Copy a banner image for the blog index page. The banner should be approximately 3.2:1 aspect ratio (e.g., 1600x500px).
 
-Place it at: `<dir>/src/app/blog/banner.png`
+**IMPORTANT - For AI agents:** The `skill/` folder is located at the **REPOSITORY ROOT**, parallel to `<dir>`, NOT inside it. Check your current working directory first with `pwd`:
 
-**For AI agents**: If replicating from an "official" folder to a target folder, copy the existing banner:
+**Directory structure:**
+```
+fumadocs/                    ← Repository root
+├── skill/                   ← Skill files are HERE
+│   └── Image/
+│       └── banner.png
+└── <dir>/                   ← Your target directory
+    └── src/app/blog/
+```
+
+**Command based on your current location:**
 
 ```bash
-cp "<official-dir>/src/app/(home)/blog/banner.png" "<dir>/src/app/blog/banner.png"
+# Step 1: Check where you are
+pwd
+
+# Step 2a: If at repository root (path ends with 'fumadocs'):
+cp "skill/Image/banner.png" "<dir>/src/app/blog/banner.png"
+
+# Step 2b: If already inside <dir> (path ends with 'fumadocs/<dir-name>' or similar):
+cp "../skill/Image/banner.png" "src/app/blog/banner.png"
 ```
+
+**Rule:** If you're inside `<dir>`, use `../skill/` to go up one level to access the skill folder.
+
+If you do not have the image in `skill/Image/`, substitute any wide image — the container is `aspect-[3.2]`, so roughly 3.2:1 works best.
+
+Place it at: `<dir>/src/app/blog/banner.png`
 
 ### Step 7: Create Individual Blog Post Page
 
@@ -379,7 +402,7 @@ import {
 
 export const metadata = {
   title: 'Blog Tags',
-  description: 'All tags of Fumadocs Blog',
+  description: 'All tags of Future Studio Blog',
 };
 
 export default function Page() {
@@ -440,7 +463,7 @@ export async function generateMetadata(props: { params: Promise<{ tag: string }>
 
   return {
     title: `${result.tag.name} - Blog`,
-    description: `Posts tagged ${result.tag.name} on Fumadocs Blog`,
+    description: `Posts tagged ${result.tag.name} on Future Studio Blog`,
   };
 }
 
@@ -619,10 +642,10 @@ Update the banner section in the blog index page to use the new color variables:
     className="absolute inset-0 size-full -z-1 object-cover"
   />
   <h1 className="mb-4 text-3xl font-mono font-medium text-(--banner-text-color-up)">
-    Fumadocs Blog
+    Future Studio Blog
   </h1>
-  <p className="text-sm font-mono text-(--banner-text-color-down)">
-    Latest announcements of Fumadocs.
+  <p className="font-mono text-sm text-(--banner-text-color-down)">
+    Latest announcements of Future Studio
   </p>
   <Link
     href="/blog/tags"
