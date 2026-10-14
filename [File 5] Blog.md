@@ -134,7 +134,7 @@ export const blogSource = loader({
 });
 
 export const blogAuthors: Record<string, BlogAuthor> = {
-  fuma: {
+  futurelyf: {
     name: 'Yifan Liang',
     title: 'Developer',
     url: 'https://github.com/futurelyf',
@@ -489,7 +489,7 @@ Create sample blog posts to demonstrate the system.
 ---
 title: Welcome to Our Blog
 description: Getting started with our documentation blog
-authors: [fuma]
+authors: [futurelyf]
 tags: [Announcement, Getting Started]
 date: 2026-10-13
 # image: /blog/welcome.png
@@ -516,7 +516,7 @@ Thank you for being part of our journey!
 ---
 title: Building Better Documentation
 description: Tips and best practices for creating great docs
-authors: [fuma]
+authors: [futurelyf]
 tags: [Announcement, Tutorial]
 date: 2026-10-12
 # image: /blog/best-practices.png
