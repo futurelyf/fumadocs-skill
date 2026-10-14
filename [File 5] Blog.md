@@ -530,6 +530,278 @@ Documentation is a product feature. Invest in it, and your users will thank you.
 - `authors` - Array of author keys from `blogAuthors` (unknown keys become plain names)
 - `image` - Cover image URL shown on post cards (can be local or remote)
 
+### Step 11: Add Blog Section Colors
+
+This step adds custom color theming for the blog section and proper text colors for the banner overlay.
+
+#### Add Blog Route Constant
+
+**`<dir>/src/lib/shared.ts`:**
+
+Add the blog route constant to your existing exports:
+
+```typescript
+export const blogRoute = '/blog';
+```
+
+#### Add Blog Color Variables
+
+**`<dir>/src/app/global.css`:**
+
+Add blog-specific color variables to your existing color section:
+
+```css
+:root {
+  --banner-text-color-up: #59592a;
+  --banner-text-color-down: #a8a866;
+  --blog-color: hsl(25, 55%, 35%);
+}
+
+.dark {
+  --banner-text-color-up: #e4e2d0;
+  --banner-text-color-down: #b7af7e;
+  --blog-color: #d9b38c;
+}
+
+.blog {
+  --color-fd-primary: var(--blog-color);
+}
+```
+
+#### Update Section Detection
+
+**`<dir>/src/app/layout.client.tsx`:**
+
+Update the `Body` component to detect blog routes and apply the `.blog` class:
+
+```typescript
+'use client';
+
+import { usePathname } from 'next/navigation';
+import { RootProvider } from 'fumadocs-ui/provider';
+import { FC, ReactNode } from 'react';
+import { docsRoute } from '@/lib/shared';
+
+export const Body: FC<{ children: ReactNode }> = ({ children }) => {
+  const pathname = usePathname();
+  let section = '';
+  
+  if (pathname.startsWith(docsRoute)) {
+    const urlAfterDocs = pathname.slice(docsRoute.length);
+    if (urlAfterDocs.startsWith('/sec-1')) section = 'sec-1';
+    else if (urlAfterDocs.startsWith('/sec-2')) section = 'sec-2';
+  } else if (pathname.startsWith('/blog')) {
+    section = 'blog';
+  }
+
+  return (
+    <body className={section}>
+      <RootProvider>{children}</RootProvider>
+    </body>
+  );
+};
+```
+
+**Key change:** Added the `else if (pathname.startsWith('/blog'))` condition to detect blog routes and apply the `'blog'` section class.
+
+#### Update Banner Text Colors
+
+**`<dir>/src/app/blog/page.tsx`:**
+
+Update the banner section in the blog index page to use the new color variables:
+
+```typescript
+<div className="relative dark mb-4 aspect-[3.2] p-8 z-2 md:p-12">
+  <Image
+    src={BannerImage}
+    priority
+    alt="banner"
+    className="absolute inset-0 size-full -z-1 object-cover"
+  />
+  <h1 className="mb-4 text-3xl font-mono font-medium text-(--banner-text-color-up)">
+    Fumadocs Blog
+  </h1>
+  <p className="text-sm font-mono text-(--banner-text-color-down)">
+    Latest announcements of Fumadocs.
+  </p>
+  <Link
+    href="/blog/tags"
+    className="mt-6 inline-flex items-center gap-2 rounded-lg border bg-fd-secondary/50 px-3 py-1.5 text-sm font-mono transition-colors hover:bg-fd-accent"
+    style={{ color: 'var(--banner-text-color-up)' }}
+  >
+    <TagsIcon className="size-4" />
+    All Tags
+  </Link>
+</div>
+```
+
+**Key changes:**
+- Heading uses `text-(--banner-text-color-up)` for primary banner text
+- Subtitle uses `text-(--banner-text-color-down)` for secondary banner text
+- Button text uses inline style `style={{ color: 'var(--banner-text-color-up)' }}` for proper color
+
+### Step 12: Add Navigation Links
+
+This step adds navigation links between docs and blog sections in the navbar.
+
+#### Create Navigation Helper Function
+
+**`<dir>/src/lib/layout.shared.tsx`:**
+
+Add a `homeOptions()` function that extends `baseOptions()` with navigation links:
+
+```typescript
+import type { BaseLayoutProps } from 'fumadocs-ui/layouts/shared';
+import { appName, blogRoute, docsRoute, gitConfig } from './shared';
+import { FumadocsIcon } from '@/app/layout.client';
+
+export function baseOptions(): BaseLayoutProps {
+  return {
+    nav: {
+      title: (
+        <>
+          <FumadocsIcon className="size-5" />
+          {appName}
+        </>
+      ),
+    },
+    githubUrl: `https://github.com/${gitConfig.user}`,
+  };
+}
+
+export function homeOptions(): BaseLayoutProps {
+  return {
+    ...baseOptions(),
+    links: [
+      {
+        text: 'Docs',
+        url: docsRoute,
+      },
+      {
+        text: 'Blog',
+        url: blogRoute,
+      },
+    ],
+  };
+}
+```
+
+#### Update Home and Blog Layouts
+
+**`<dir>/src/app/(home)/layout.tsx`:**
+
+```typescript
+import { HomeLayout } from '@/layouts/home';
+import { homeOptions } from '@/lib/layout.shared';
+
+export default function Layout({ children }: LayoutProps<'/'>) {
+  return <HomeLayout {...homeOptions()}>{children}</HomeLayout>;
+}
+```
+
+**`<dir>/src/app/blog/layout.tsx`:**
+
+```typescript
+import { HomeLayout } from '@/layouts/home';
+import { homeOptions } from '@/lib/layout.shared';
+
+export default function Layout({ children }: { children: React.ReactNode }) {
+  return <HomeLayout {...homeOptions()}>{children}</HomeLayout>;
+}
+```
+
+**Key change:** Both layouts now use `homeOptions()` instead of `baseOptions()` to get the Docs and Blog navigation links in the navbar.
+
+### Step 13: Add Blog Icon to Docs Sidebar
+
+This step adds icon buttons in the docs sidebar footer for easy navigation to GitHub and the blog.
+
+**Prerequisites:** Install `@iconify/react` dependency:
+
+```bash
+cd "<dir>" && pnpm add @iconify/react
+```
+
+#### Update Layout Shared Configuration
+
+**`<dir>/src/lib/layout.shared.tsx`:**
+
+Replace the implementation with icon-based links:
+
+```typescript
+import type { BaseLayoutProps } from 'fumadocs-ui/layouts/shared';
+import { Icon } from '@iconify/react';
+import { Signature } from 'lucide-react';
+import { appName, blogRoute, docsRoute, gitConfig } from './shared';
+import { FumadocsIcon } from '@/app/layout.client';
+
+const githubUrl = `https://github.com/${gitConfig.user}`;
+
+export function baseOptions(): BaseLayoutProps {
+  return {
+    nav: {
+      title: (
+        <>
+          <FumadocsIcon className="size-5" />
+          {appName}
+        </>
+      ),
+    },
+    links: [
+      {
+        type: 'icon',
+        url: githubUrl,
+        text: 'Github',
+        label: 'GitHub',
+        icon: <Icon icon="fa7-brands:github" />,
+        external: true,
+      },
+      {
+        type: 'icon',
+        url: blogRoute,
+        text: 'Blog',
+        label: 'Blog',
+        icon: <Signature />,
+      },
+    ],
+  };
+}
+
+export function homeOptions(): BaseLayoutProps {
+  return {
+    ...baseOptions(),
+    links: [
+      {
+        text: 'Docs',
+        url: docsRoute,
+      },
+      {
+        text: 'Blog',
+        url: blogRoute,
+      },
+    ],
+    githubUrl,
+  };
+}
+```
+
+**Key changes:**
+1. Removed `githubUrl` from `baseOptions()` return value
+2. Added `links` array with two `type: 'icon'` entries:
+   - GitHub icon using `@iconify/react` with `fa7-brands:github`
+   - Blog icon using `Signature` from `lucide-react`
+3. `homeOptions()` overrides `links` with text links and adds `githubUrl` back
+
+**How it works:**
+- `DocsLayout` renders `type: 'icon'` links in the sidebar footer (docs pages only)
+- `HomeLayout` renders regular text links in the navbar (home and blog pages)
+- The docs sidebar shows GitHub and Blog as icon buttons side-by-side
+- Home and blog pages show "Docs" and "Blog" as text links in the navbar with GitHub as a standalone button
+
+**Icon customization:**
+- To use a different lucide icon for blog, replace `Signature` import and JSX
+- Icon size is automatically applied by fumadocs-ui (`size-4.5`)
+
 ## How The System Works
 
 ### Blog Architecture
@@ -616,6 +888,13 @@ After completing this task:
 
 1. `<dir>/src/lib/source.ts` — Added blog collection, loader, and author definitions
 2. `<dir>/next.config.mjs` — Added remote image patterns for avatars
+3. `<dir>/src/lib/shared.ts` — Added blog route constant
+4. `<dir>/src/app/global.css` — Added blog section color variables
+5. `<dir>/src/app/layout.client.tsx` — Updated section detection for blog routes
+6. `<dir>/src/lib/layout.shared.tsx` — Added homeOptions() with navigation links
+7. `<dir>/src/app/(home)/layout.tsx` — Updated to use homeOptions()
+8. `<dir>/src/app/blog/layout.tsx` — Updated to use homeOptions()
+9. `<dir>/src/app/blog/page.tsx` — Updated banner with color variables
 
 ## Customization Guide
 
@@ -797,3 +1076,7 @@ This implementation follows the official Fumadocs blog integration pattern:
 - The floating TOC panel uses native `navigator.share()` when available
 - All blog routes support static site generation
 - The blog is independent of the docs section — different layouts and styling
+- Blog section colors are applied via the `.blog` body class using CSS custom properties
+- Banner text colors use separate variables for light/dark mode support
+- Navigation links appear as text in home/blog layouts
+- Icon links appear in docs sidebar footer (requires `@iconify/react`)
