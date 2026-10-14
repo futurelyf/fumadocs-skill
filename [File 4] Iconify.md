@@ -265,39 +265,58 @@ export const source = loader({
 // ... docsLlms export (unchanged) ...
 ```
 
-### Step 6: Update Root Layout
+### Step 6: Update Client Body Component (Recommended Approach)
 
-Modify `<dir>/src/app/layout.tsx` to render the IconRegistry component:
+**IMPORTANT:** `IconRegistry` is a client component (uses `'use client'` and `useEffect`). While it can technically be rendered in a server component, the architecturally cleaner approach is to render it inside your existing client component wrapper.
+
+Modify `<dir>/src/app/layout.client.tsx` to include the IconRegistry:
 
 **Before:**
 ```tsx
-import { RootProvider } from 'fumadocs-ui/provider/next';
-import './global.css';
-import { Inter } from 'next/font/google';
-import { Body } from './layout.client';
-import type { Metadata } from 'next';
+'use client';
 
-// ... inter font and metadata definitions ...
+import { useParams } from 'next/navigation';
+import { type ReactNode, useId } from 'react';
+import { getSection } from '@/lib/navigation';
 
-export default function Layout({ children }: LayoutProps<'/'>) {
-  return (
-    <html lang="en" className={inter.className} suppressHydrationWarning>
-      <Body>
-        <RootProvider>{children}</RootProvider>
-      </Body>
-    </html>
-  );
+export function Body({ children }: { children: ReactNode }) {
+  const { slug = [] } = useParams();
+  const section = Array.isArray(slug) ? getSection(slug[0]) : undefined;
+
+  return <body className={`flex flex-col min-h-screen ${section || ''}`}>{children}</body>;
 }
 ```
 
 **After:**
 ```tsx
+'use client';
+
+import { useParams } from 'next/navigation';
+import { type ReactNode, useId } from 'react';
+import { getSection } from '@/lib/navigation';
+import { IconRegistry } from '@/lib/icon-registry';
+
+export function Body({ children }: { children: ReactNode }) {
+  const { slug = [] } = useParams();
+  const section = Array.isArray(slug) ? getSection(slug[0]) : undefined;
+
+  return (
+    <body className={`flex flex-col min-h-screen ${section || ''}`}>
+      <IconRegistry />
+      {children}
+    </body>
+  );
+}
+```
+
+**Note:** Your `<dir>/src/app/layout.tsx` file should remain a server component and should NOT import `IconRegistry` directly. The layout should only render the `Body` component:
+
+```tsx
 import { RootProvider } from 'fumadocs-ui/provider/next';
 import './global.css';
 import { Inter } from 'next/font/google';
 import { Body } from './layout.client';
 import type { Metadata } from 'next';
-import { IconRegistry } from '@/lib/icon-registry';
 
 // ... inter font and metadata definitions ...
 
@@ -305,13 +324,18 @@ export default function Layout({ children }: LayoutProps<'/'>) {
   return (
     <html lang="en" className={inter.className} suppressHydrationWarning>
       <Body>
-        <IconRegistry />
         <RootProvider>{children}</RootProvider>
       </Body>
     </html>
   );
 }
 ```
+
+**Why this approach is better:**
+- Clear separation: server components handle structure, client components handle client-side initialization
+- IconRegistry is client-side icon initialization, so it belongs in a client component
+- Follows React Server Components best practices
+- More maintainable and easier to understand for other developers
 
 ## Files Created/Modified
 
@@ -322,7 +346,7 @@ export default function Layout({ children }: LayoutProps<'/'>) {
 
 ### Files Modified:
 1. **`<dir>/src/lib/source.ts`** - Updated imports and plugin configuration
-2. **`<dir>/src/app/layout.tsx`** - Added IconRegistry component
+2. **`<dir>/src/app/layout.client.tsx`** - Added IconRegistry component (recommended approach)
 3. **`<dir>/package.json`** - Updated dependencies (via package manager)
 
 ## Usage
