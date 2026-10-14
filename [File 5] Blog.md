@@ -716,6 +716,8 @@ import type { BaseLayoutProps } from 'fumadocs-ui/layouts/shared';
 import { appName, blogRoute, docsRoute, gitConfig } from './shared';
 import { FumadocsIcon } from '@/app/layout.client';
 
+const githubUrl = `https://github.com/${gitConfig.user}`;
+
 export function baseOptions(): BaseLayoutProps {
   return {
     nav: {
@@ -726,7 +728,7 @@ export function baseOptions(): BaseLayoutProps {
         </>
       ),
     },
-    githubUrl: `https://github.com/${gitConfig.user}`,
+    githubUrl,
   };
 }
 
