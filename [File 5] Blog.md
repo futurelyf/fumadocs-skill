@@ -567,13 +567,17 @@ Add the blog route constant to your existing exports:
 export const blogRoute = '/blog';
 ```
 
-#### Add Blog Color Variables
+#### Add Blog Color Variables and Page Width
 
 **`<dir>/src/app/global.css`:**
 
-Add blog-specific color variables to your existing color section:
+Add the `@theme` block with `--spacing-page` to set proper blog page width, and add blog-specific color variables:
 
 ```css
+@theme {
+  --spacing-page: 1436px;
+}
+
 :root {
   --banner-text-color-up: #59592a;
   --banner-text-color-down: #a8a866;
@@ -590,6 +594,11 @@ Add blog-specific color variables to your existing color section:
   --color-fd-primary: var(--blog-color);
 }
 ```
+
+**Key additions:**
+- `@theme { --spacing-page: 1436px; }` - Sets the maximum width for `max-w-page` used in all blog pages, providing generous left and right margins
+- Banner text color variables for light/dark modes
+- Blog section color theming
 
 #### Update Section Detection
 
@@ -912,7 +921,7 @@ After completing this task:
 1. `<dir>/src/lib/source.ts` — Added blog collection, loader, and author definitions
 2. `<dir>/next.config.mjs` — Added remote image patterns for avatars
 3. `<dir>/src/lib/shared.ts` — Added blog route constant
-4. `<dir>/src/app/global.css` — Added blog section color variables
+4. `<dir>/src/app/global.css` — Added `@theme` block with `--spacing-page: 1436px` for proper page width, blog section color variables, and banner text colors
 5. `<dir>/src/app/layout.client.tsx` — Updated section detection for blog routes
 6. `<dir>/src/lib/layout.shared.tsx` — Added homeOptions() with navigation links
 7. `<dir>/src/app/(home)/layout.tsx` — Updated to use homeOptions()
