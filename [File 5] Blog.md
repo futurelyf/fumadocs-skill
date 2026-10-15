@@ -553,31 +553,50 @@ Documentation is a product feature. Invest in it, and your users will thank you.
 - `authors` - Array of author keys from `blogAuthors` (unknown keys become plain names)
 - `image` - Cover image URL shown on post cards (can be local or remote)
 
-### Step 11: Add Blog Section Colors
+### Step 11: Add Blog Route Constant
 
-This step adds custom color theming for the blog section and proper text colors for the banner overlay.
-
-#### Add Blog Route Constant
+Add the blog route constant to the shared configuration file.
 
 **`<dir>/src/lib/shared.ts`:**
 
-Add the blog route constant to your existing exports:
+Add this export to your existing exports:
 
 ```typescript
 export const blogRoute = '/blog';
 ```
 
-#### Add Blog Color Variables and Page Width
+**What this does:**
+- Defines the blog base route for use across the application
+- Will be imported by layout configuration in later steps
+
+### Step 12: Add Blog Page Width Configuration
+
+Configure the maximum page width for blog pages.
 
 **`<dir>/src/app/global.css`:**
 
-Add the `@theme` block with `--spacing-page` to set proper blog page width, and add blog-specific color variables:
+Add the `@theme` block at the beginning of the file (before `:root` if it exists):
 
 ```css
 @theme {
   --spacing-page: 1436px;
 }
+```
 
+**What this does:**
+- Sets the maximum width for `max-w-page` utility class
+- Provides generous left and right margins for blog pages
+- All blog pages use this width constraint
+
+### Step 13: Add Blog Color Variables
+
+Add custom color variables for blog section theming and banner text.
+
+**`<dir>/src/app/global.css`:**
+
+Add these color variables to the existing `:root` and `.dark` blocks:
+
+```css
 :root {
   --banner-text-color-up: #59592a;
   --banner-text-color-down: #a8a866;
@@ -595,12 +614,15 @@ Add the `@theme` block with `--spacing-page` to set proper blog page width, and 
 }
 ```
 
-**Key additions:**
-- `@theme { --spacing-page: 1436px; }` - Sets the maximum width for `max-w-page` used in all blog pages, providing generous left and right margins
-- Banner text color variables for light/dark modes
-- Blog section color theming
+**What this does:**
+- `--banner-text-color-up`: Primary text color on banner (light/dark variants)
+- `--banner-text-color-down`: Secondary text color on banner (light/dark variants)
+- `--blog-color`: Theme color for blog section links and accents
+- `.blog` class applies blog-specific primary color when active
 
-#### Update Section Detection
+### Step 14: Update Section Detection for Blog Routes
+
+Update the Body component to detect blog routes and apply the `.blog` class for color theming.
 
 **`<dir>/src/app/layout.client.tsx`:**
 
@@ -665,7 +687,14 @@ export function Body({ children }: { children: ReactNode }) {
 3. Change `const section` to `let section` (to allow reassignment)
 4. Add blog detection: `if (pathname.startsWith('/blog')) { section = 'blog'; }`
 
-#### Update Banner Text Colors
+**What this does:**
+- Detects when user is on any `/blog/*` route
+- Applies the `.blog` class to the body element
+- Enables blog-specific color theming via CSS variables
+
+### Step 15: Update Banner Text Colors
+
+Update the banner section in the blog index page to use the new color variables.
 
 **`<dir>/src/app/blog/page.tsx`:**
 
@@ -701,15 +730,13 @@ Update the banner section in the blog index page to use the new color variables:
 - Subtitle uses `text-(--banner-text-color-down)` for secondary banner text
 - Button text uses inline style `style={{ color: 'var(--banner-text-color-up)' }}` for proper color
 
-### Step 12: Add Navigation Links
+### Step 16: Add homeOptions Function for Text Links
 
-This step adds navigation links between docs and blog sections in the navbar.
+Add a navigation helper function that provides text-based navigation links for home and blog layouts.
 
-#### Create Navigation Helper Function
+`<dir>/src/lib/layout.shared.tsx`:
 
-**`<dir>/src/lib/layout.shared.tsx`:**
-
-Add a `homeOptions()` function that extends `baseOptions()` with navigation links:
+Replace the entire file with:
 
 ```typescript
 import type { BaseLayoutProps } from 'fumadocs-ui/layouts/shared';
@@ -749,9 +776,16 @@ export function homeOptions(): BaseLayoutProps {
 }
 ```
 
-#### Update Home and Blog Layouts
+What this does:
+- Adds `homeOptions()` function that extends `baseOptions()`
+- Adds "Docs" and "Blog" text links for the navbar
+- Will be used by home and blog page layouts
 
-**`<dir>/src/app/(home)/layout.tsx`:**
+### Step 17: Update Home Layout to Use homeOptions
+
+Update the home page layout to use the new `homeOptions()` function.
+
+`<dir>/src/app/(home)/layout.tsx`:
 
 ```typescript
 import { HomeLayout } from '@/layouts/home';
@@ -762,7 +796,17 @@ export default function Layout({ children }: LayoutProps<'/'>) {
 }
 ```
 
-**`<dir>/src/app/blog/layout.tsx`:**
+Key changes:
+- Import `homeOptions` instead of `baseOptions`
+- Use `homeOptions()` in the spread
+
+### Step 18: Create Blog Layout File
+
+Create a new layout file for the blog section.
+
+`<dir>/src/app/blog/layout.tsx`:
+
+Create this new file with the following content:
 
 ```typescript
 import { HomeLayout } from '@/layouts/home';
@@ -773,9 +817,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 }
 ```
 
-**Key change:** Both layouts now use `homeOptions()` instead of `baseOptions()` to get the Docs and Blog navigation links in the navbar.
+What this does:
+- Uses `HomeLayout` component for blog pages
+- Applies `homeOptions()` to add "Docs" and "Blog" navbar links
+- Wraps all `/blog/*` routes with consistent navigation
 
-### Step 13: Add Blog Icon to Docs Sidebar
+### Step 19: Add Blog Icon to Docs Sidebar
 
 This step adds icon buttons in the docs sidebar footer for easy navigation to GitHub and the blog.
 
