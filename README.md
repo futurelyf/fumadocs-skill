@@ -2,7 +2,7 @@
 
 Step-by-step guides for setting up a complete Fumadocs documentation site.
 
-## Files
+## 📖 Files
 
 - **`[File 1] Docs.md`** — Core documentation setup: sidebar tabs, section colors, navbar icon
 - **`[File 2] Home.md`** — Landing page with hero, features, CTAs
@@ -21,7 +21,9 @@ The following files require manual terminal command entry:
 
 **When using with AI agents:** The AI will prompt you to run these commands manually. Confirm completion before the agent proceeds with subsequent steps.
 
-## Usage
+**Note:** `[File 5] Blog.md` is particularly long and may require extra attention when running with an agent, as the agent can sometimes get confused with the number of steps involved.
+
+## 🚀 Usage
 
 Feed these files to an AI agent like Claude using:
 
