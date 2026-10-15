@@ -28,12 +28,12 @@ The following files require manual terminal command entry:
 Feed these files to an AI agent like Claude using:
 
 ```
-Read `<skill-path>`, and apply it to the `<dir>` in order and in full.
+Read `<skill>`, and apply it to the `<dir>` in order and in full without improvising. By saying "in order", it means you MUST apply the skill strictly step-by-step. By saying "without improvising", it means you should only copy and paste the code from the skill markdown file without thinking and modifying. You may need to read the target file (if any) first to find the difference between the target file and the code provided by the skill markdown file so that you can make the changes more accurately.
 ```
 
 **Example:**
 ```
-Read "/path/to/skill/[File 1] Docs.md", apply it to "template" folder in order in full.
+Read "/path/to/skill/[File 1] Docs.md", and apply it to the "template" folder in order and in full without improvising. By saying "in order", it means you MUST apply the skill strictly step-by-step. By saying "without improvising", it means you should only copy and paste the code from the skill file without thinking and modifying. You may need to read the target file (if any) first to find the difference between the target file and the code provided by the skill markdown file so that you can make the changes more accurately.
 ```
 
 Each file contains sequential tasks that build upon previous ones. Apply them in numeric order for a complete setup.
