@@ -397,6 +397,41 @@ Replace it with (swap the order of `searchTrigger` and `TabsMenu`):
 
 This ensures the search bar appears above the section switching bar, matching the visual order of the docs layout.
 
+### Step 10: Fix Tab Icon Size on Mobile for Spacious Layout
+
+By default, tab icons in the spacious layout are only `size-4` (16px), which is too small for touch targets on mobile devices. This adjustment makes them larger and more touch-friendly on phone screens.
+
+**`<dir>/src/layouts/spacious/slots/sidebar.tsx`:**
+
+Find the `TabIcon` component around line 234 and update the `className`:
+
+**Before:**
+```tsx
+className={cn(
+  'flex items-center justify-center shrink-0 size-4 font-medium',
+  !tab.icon && 'rounded bg-fd-muted text-[10px] text-fd-muted-foreground',
+  className,
+)}
+```
+
+**After:**
+```tsx
+className={cn(
+  'flex items-center justify-center shrink-0 size-8 md:size-4 font-medium',
+  !tab.icon && 'rounded bg-fd-muted text-[10px] text-fd-muted-foreground',
+  className,
+)}
+```
+
+**What changed:**
+- `size-4` → `size-8 md:size-4`
+
+**Effect:**
+- **Mobile (< 768px):** Icons render at `size-8` (2rem / 32px)
+- **Desktop (≥ 768px):** Icons render at `size-4` (1rem / 16px)
+
+This responsive sizing makes sidebar tab icons significantly larger and more touch-friendly on mobile devices while maintaining the original compact appearance on desktop.
+
 ## How The System Works
 
 ### Layout Switching Flow
